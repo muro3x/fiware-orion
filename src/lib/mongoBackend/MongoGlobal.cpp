@@ -66,6 +66,9 @@
 #include "mongoBackend/compoundResponses.h"
 #include "mongoBackend/MongoGlobal.h"
 
+#include "mongoDriver/mongoConnectionPool.h"
+#include "mongoDriver/BSONArray.h"
+#include "mongoDriver/BSONArrayBuilder.h"
 
 
 /* ****************************************************************************
@@ -236,6 +239,24 @@ void mongoInit
                               mutexTimeStat) != 0)
   {
     LM_X(1, ("Fatal Error (MongoDB error)"));
+  }
+
+  // FIXME OLD-DR: only orion::mongoConnectionPoolInit() at the end
+  if (orion::mongoConnectionPoolInit(dbHost,
+                              dbName.c_str(),
+                              rplSet,
+                              user,
+                              pwd,
+                              mechanism,
+                              authDb,
+                              dbSSL,
+                              mtenant,
+                              tmo,
+                              writeConcern,
+                              dbPoolSize,
+                              mutexTimeStat) != 0)
+  {
+    LM_X(1, ("Fatal Error (MongoDB error, 2nd pool)"));
   }
 
   if (user[0] != 0)
@@ -2572,7 +2593,7 @@ static bool processOnChangeConditionForSubscription
 *
 * processConditionVector -
 */
-static BSONArray processConditionVector
+static orion::BSONArray processConditionVector
 (
   NotifyConditionVector*           ncvP,
   const EntityIdVector&            enV,
@@ -2594,7 +2615,7 @@ static BSONArray processConditionVector
   ApiVersion                       apiVersion
 )
 {
-  BSONArrayBuilder conds;
+  orion::BSONArrayBuilder conds;
 
   *notificationDone = false;
 
@@ -2647,7 +2668,7 @@ static BSONArray processConditionVector
 * This is a wrapper for the other vesion of processConditionVector(), for NGSIv2.
 * At the end, this version should be the actual one, once NGSIv1 is removed.
 */
-BSONArray processConditionVector
+orion::BSONArray processConditionVector
 (
   const std::vector<std::string>&  condAttributesV,
   const std::vector<EntID>&        entitiesV,
@@ -2677,7 +2698,7 @@ BSONArray processConditionVector
   entIdStdVector2EntityIdVector(entitiesV, &enV);
   attrL.fill(notifAttributesV);
 
-  BSONArray arr = processConditionVector(&ncV,
+  orion::BSONArray arr = processConditionVector(&ncV,
                                          enV,
                                          attrL,
                                          metadataV,
