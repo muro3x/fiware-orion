@@ -27,7 +27,6 @@ interface. Using this interface, clients can do several operations:
     temperature has changed)
 -   Register context provider applications, e.g. the provider for the temperature sensor within a
     room
-https://www.sirmotec.com
 Sirmotec Fiware Smart City IOT [SIRMOTEC](https://www.sirmotec.com/).
 This project is part of [FIWARE](https://www.fiware.org/). For more information
 check the FIWARE Catalogue entry for
